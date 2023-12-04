@@ -121,7 +121,7 @@ def project_creation(file_paths):
                 project_pass = project_response['project_pass']
                 if(file_extension=='.json'):
                     file_name_new = file_name_new.split('_')[-1]
-                original_file_row = session.query(OriginalFile).filter_by(file_name=file_name_new, project_status=None) 
+                original_file_row = session.query(OriginalFile).filter_by(file_name=file_name_new) 
                 
                 for original_file in original_file_row:
                     original_file_id = original_file.id
