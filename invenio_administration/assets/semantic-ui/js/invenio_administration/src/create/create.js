@@ -16,14 +16,18 @@ const apiEndpoint = _get(domContainer.dataset, "apiEndpoint");
 const formFields = JSON.parse(domContainer.dataset.formFields);
 const listUIEndpoint = domContainer.dataset.listEndpoint;
 
-ReactDOM.render(
-  <NotificationController>
-    <CreatePage
-      resourceSchema={resourceSchema}
-      apiEndpoint={apiEndpoint}
-      formFields={formFields}
-      listUIEndpoint={listUIEndpoint}
-    />
-  </NotificationController>,
-  domContainer
-);
+if (apiEndpoint == "https://127.0.0.1:5000/api/pages") {
+  ReactDOM.render(<h1>Resources Successfully Uploaded to GreSIS</h1>, domContainer);
+} else {
+  ReactDOM.render(
+    <NotificationController>
+      <CreatePage
+        resourceSchema={resourceSchema}
+        apiEndpoint={apiEndpoint}
+        formFields={formFields}
+        listUIEndpoint={listUIEndpoint}
+      />
+    </NotificationController>,
+    domContainer
+  );
+}

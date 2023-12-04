@@ -11,21 +11,51 @@ class EditCmp extends Component {
       return null;
     }
     const disabled = disable(resource);
-
-    return (
-      <Popup
-        content={disabledMessage}
-        disabled={!disabled}
-        trigger={
-          <span className="mr-5">
-            <Button as="a" disabled={disabled} href={editUrl} icon labelPosition="left">
-              <Icon name="pencil" />
-              {i18next.t("Edit")}
-            </Button>
-          </span>
-        }
-      />
-    );
+    const spliturl = editUrl.split("/")[2];
+    
+    if (spliturl == "banners") {
+      return (
+        <Popup
+          content={disabledMessage}
+          disabled={!disabled}
+          trigger={
+            <span className="mr-5">
+              <Button
+                as="a"
+                disabled={disabled}
+                href={editUrl}
+                icon
+                labelPosition="left"
+              >
+                <Icon name="upload" />
+                {i18next.t("Upload")}
+              </Button>
+            </span>
+          }
+        />
+      );
+    } else {
+      return (
+        <Popup
+          content={disabledMessage}
+          disabled={!disabled}
+          trigger={
+            <span className="mr-5">
+              <Button
+                as="a"
+                disabled={disabled}
+                href={editUrl}
+                icon
+                labelPosition="left"
+              >
+                <Icon name="pencil" />
+                {i18next.t("Edit")}
+              </Button>
+            </span>
+          }
+        />
+      );
+    }
   }
 }
 

@@ -17,15 +17,19 @@ const pid = JSON.parse(domContainer.dataset.pid);
 const formFields = JSON.parse(domContainer.dataset.formFields);
 const listUIEndpoint = domContainer.dataset.listEndpoint;
 
-ReactDOM.render(
-  <NotificationController>
-    <EditPage
-      resourceSchema={resourceSchema}
-      apiEndpoint={apiEndpoint}
-      formFields={formFields}
-      pid={pid}
-      listUIEndpoint={listUIEndpoint}
-    />
-  </NotificationController>,
-  domContainer
-);
+if (apiEndpoint == "https://127.0.0.1:5000/api/banners") {
+  ReactDOM.render(<h1>Resources Successfully Harvesred</h1>, domContainer);
+} else {
+  ReactDOM.render(
+    <NotificationController>
+      <EditPage
+        resourceSchema={resourceSchema}
+        apiEndpoint={apiEndpoint}
+        formFields={formFields}
+        pid={pid}
+        listUIEndpoint={listUIEndpoint}
+      />
+    </NotificationController>,
+    domContainer
+  );
+}

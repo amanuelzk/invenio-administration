@@ -28,6 +28,17 @@
             </div>
           </div>
         {% endif %}
+        {% if display_translate %}
+          <div class="ui grid fluid">
+            <div class="three wide column right floated">
+              <a class="ui right floated icon left labeled button green"
+                 href="{{ create_ui_endpoint }}">
+                <i aria-hidden="true"
+                   class="translate icon"></i>{{ _("Translate and Publish") }}
+              </a>
+            </div>
+          </div>
+        {% endif %}
       </div>
     </div>
       {% block admin_page_content %}
