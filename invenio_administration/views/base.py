@@ -104,7 +104,6 @@ class AdminView(MethodView):
     @property
     def endpoint(self):
         """Get name for endpoint location e.g: 'administration.index'."""
-        # print("THIS IS EDIT 1")
         if self.administration is None:
             return self.name
         return f"{self.administration.endpoint}.{self.name}"
@@ -112,7 +111,6 @@ class AdminView(MethodView):
     @classmethod
     def _get_view_extension(cls, extension_name=None):
         """Get the flask extension of the view."""
-        # print("THIS IS EDIT 2")
         try:
             if extension_name:
                 return current_app.extensions[extension_name]
@@ -122,10 +120,7 @@ class AdminView(MethodView):
 
     def _get_view_url(self, url):
         """Generate URL for the view. Override to change default behavior."""
-        # print("THIS IS EDIT 3")
         new_url = url
-        # print("URL IN 3")
-        # print(new_url)
         if new_url is None:
             if isinstance(self, self.administration.dashboard_view_class):
                 new_url = "/"
@@ -136,23 +131,18 @@ class AdminView(MethodView):
                 new_url = "/%s" % (url)
         # Sanitize url
         new_url = new_url.replace(" ", "_")
-        # print("NEW URL")
-        # print(new_url)
         return new_url
 
     def _get_template(self):
-        # print("THIS IS EDIT 4")
         return self.template
 
     def render(self, **kwargs):
         """Render template."""
-        # print("THIS IS EDIT 5")
         kwargs["admin_base_template"] = self.administration.base_template
         return render_template(self._get_template(), **kwargs)
 
     def get(self):
         """GET view method."""
-        # print("THIS IS EDIT 6")
         return self.render()
 
 
@@ -195,18 +185,15 @@ class AdminResourceBaseView(AdminView):
     @classmethod
     def set_schema(cls):
         """Set schema."""
-        # print("THIS IS EDIT 7")
         cls.schema = cls.get_service_schema()
 
     @classmethod
     def set_resource(cls, extension_name=None):
         """Set resource."""
-        # print("THIS IS EDIT 8")
         cls.resource = cls._get_resource(extension_name)
 
     @classmethod
     def _get_resource(cls, extension_name=None):
-        # print("THIS IS EDIT 9")
         extension_name = cls._get_view_extension(extension_name)
         try:
             return getattr(extension_name, cls.resource_config)
@@ -218,7 +205,6 @@ class AdminResourceBaseView(AdminView):
         """Get marshmallow schema of the assigned service."""
         # schema.schema due to the schema wrapper imposed,
         # when the actual class needed
-        # print("THIS IS EDIT 10")
         return cls.resource.service.schema.schema()
 
     def _schema_to_json(self, schema):
@@ -226,12 +212,10 @@ class AdminResourceBaseView(AdminView):
 
         Provides action payload template for the frontend.
         """
-        # print("THIS IS EDIT 11")
         return jsonify_schema(schema)
 
     def get_api_endpoint(self):
         """Get search API endpoint."""
-        # print("THIS IS EDIT 12")
         api_url_prefix = current_app.config["SITE_API_URL"]
         slash_tpl = "/" if not self.api_endpoint.startswith("/") else ""
 
@@ -250,7 +234,6 @@ class AdminResourceBaseView(AdminView):
              }
          }
         """
-        # print("THIS IS EDIT 13")
         serialized_actions = {}
         for key, value in self.actions.items():
             if "payload_schema" and "order" not in value:
@@ -266,7 +249,6 @@ class AdminResourceBaseView(AdminView):
 
     def get_list_view_endpoint(self):
         """Returns administration UI list view endpoint."""
-        # print("THIS IS EDIT 14")
         if self.list_view_name:
             return url_for(f"administration.{self.list_view_name}")
         if isinstance(self, AdminResourceListView):
@@ -274,7 +256,6 @@ class AdminResourceBaseView(AdminView):
 
     def get_create_view_endpoint(self):
         """Returns administration UI list view endpoint."""
-        # print("THIS IS EDIT 15")
   
         if self.create_view_name:
             return url_for(f"administration.{self.create_view_name}")
@@ -294,7 +275,6 @@ class AdminResourceDetailView(AdminResourceBaseView):
 
     def get_context(self, pid_value=None):
         """Create details view context."""
-        # print("THIS IS EDIT 16")
         name = self.name
         schema = self.get_service_schema()
         serialized_schema = self._schema_to_json(schema)
@@ -323,7 +303,6 @@ class AdminResourceDetailView(AdminResourceBaseView):
 
     def get(self, pid_value=None):
         """GET view method."""
-        # print("THIS IS EDIT 17")
         return self.render(**self.get_context(pid_value=pid_value))
 
 
@@ -340,37 +319,29 @@ class AdminFormView(AdminResourceBaseView):
     password = ""
     database = "file_storage"
 
-    # Connection string for MySQL
     connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}/{database}"
 
-    # Create the engine and establish the connection
     engine = create_engine(connection_string)
     Base.metadata.create_all(engine)
 
-    # Create a session
     Session = sessionmaker(bind=engine)
     session = Session()
 
 
     def get(self, pid_value=None):
         check_api_endpoint = self.api_endpoint
-        # print("checkapiendpoint")
-        # print(check_api_endpoint)
         if check_api_endpoint == "/pages":
             translate_function()
             publish_function()
         """GET view method."""
         oaiurl = ""
         for record in BannerModel.query.filter_by(id=pid_value):
-            # print("OAI URL")
             oaiurl = record.oai_url
             oaiset = record.set_name
             reponame = record.repo_name
 
-        # Automatic uploads (Start)
 
         if self.url == "/banners/<pid_value>/edit":
-        #     # Start new code
             api = "https://127.0.0.1:5000"
             token = "m1VuHtbNzvxjZuLfBs8PeIVsnAEETt31K2gnmPwKVQxZyOi7BZruP1iO0klT"
             sickle = Sickle(oaiurl)
@@ -382,20 +353,11 @@ class AdminFormView(AdminResourceBaseView):
             @limits(calls=1, period=10) # 1 request per second
             def make_api_request(req_url):
                 response = requests.get(req_url)
-                # print("STATUS CODE")
-                # print(response.status_code)
-                # if response.status_code == 200:
                 return response
-                # else:
-                #     print("STATUS CODE IN ELSE")
-                #     print(response.status_code)
-                #     time.sleep(3)
-                #     make_api_request(req_url)
             for record in records:
                 meta = record.metadata
                 creators_list=[]
                 try:
-                    author = meta['creator'][0]
                     for author in meta['creator']:
                         creators_list.append(
                             {
@@ -406,20 +368,21 @@ class AdminFormView(AdminResourceBaseView):
                             }                            
                         )
                 except:
-                    creators_list=['N/A']
+                    creators_list.append(
+                            {
+                                "person_or_org":{
+                                    "family_name": 'N/A',
+                                    "type": "personal"                                                                        
+                                }
+                            }                            
+                        )
                 try:    
                     date_string = meta['date'][0]
                     date_format = "%Y-%m-%dT%H:%M:%SZ"
-                    # try:
                     input_date = datetime.strptime(date_string, date_format)
                     publdate = input_date.strftime("%Y-%m-%d")
-                    # except:
-                        # publdate = meta['date'][0]
                 except:
                     publdate = meta['date'][0]
-                    # today = datetime.now().date()
-                    # publdate = str(today)
-                    # publdate = meta['date'][0]
                 
                 contributors_list=[]
                 try:
@@ -439,7 +402,7 @@ class AdminFormView(AdminResourceBaseView):
                 except:
                     contributors_list=[]                                   
                 
-                description = meta.get('description',['N/A'])[0]
+                description = meta.get('description',[''])[0]
                 
                 try:
                     identifier_list = meta['identifier']
@@ -449,7 +412,7 @@ class AdminFormView(AdminResourceBaseView):
                             identifier=identify
                             break
                 except:
-                    identifier='N/A'
+                    identifier=''
 
                 rectitle = meta.get('title',['N/A'])[0]
 
@@ -462,16 +425,26 @@ class AdminFormView(AdminResourceBaseView):
                             rights_link=right
                             break
                 except:
-                    rights_title = 'N/A'
+                    rights_title = ''
                     rights_link = ''
 
-                subject = meta.get('subject',['N/A'])[0]
+                subjects_list=[]
+                try:
+                    for subject in meta['subject']:
+                        subjects_list.append(
+                            {
+                                "subject": subject
+                            }
+                        )
+                except:
+                    subjects_list.append(
+                        {
+                            "subject": ''
+                        }
+                    )
 
                 publisher = meta.get('publisher',[reponame])[0]
 
-                # try:
-                #     restype = meta['type'][0].lower()
-                # except:
                 restype = 'other'
 
                 datameta = {
@@ -503,10 +476,7 @@ class AdminFormView(AdminResourceBaseView):
                             "link": rights_link
                         }
                         ],
-                        "subjects": [{
-                            "subject": subject
-                        }
-                        ],
+                        "subjects": subjects_list,
                         "title": rectitle,
                         "version": "v1"
                     },
@@ -527,7 +497,6 @@ class AdminFormView(AdminResourceBaseView):
                     "Authorization": f"Bearer {token}"
                     }
 
-                # title_split=meta['title'][0].split(' ')[0]
                 title=meta['title'][0]
                 title_split=title.split(" ")
                 title_concat=title_split[0]
@@ -562,11 +531,6 @@ class AdminFormView(AdminResourceBaseView):
                 slash = content_type.split('/')
                 extension = slash[-1].split(';')[0]
 
-                # print("EXTENSION")
-                # print(extension)
-                # print(extension == "pdf")
-
-                # file_extension = file_url.split(".")[-1]  # Extract file extension from URL
                 file_path = os.path.join(output_directory, f"{file_name_short}.{extension}")
 
                 with open(file_path, "wb") as file:
@@ -574,47 +538,8 @@ class AdminFormView(AdminResourceBaseView):
                 new_file = OriginalFile(file_name=file_name_short, file_data=file_response.content, file_type=extension,metadata_file=datameta)
                 self.session.add(new_file)
                 self.session.commit()
-                # files = self.session.query(File).all()  # Retrieve all rows from the 'files' table
-                
-                # for file in files:
-                #     print(f"File ID: {file.id}, File Name: {file.file_name}, File Type: {file.file_type}")
-                #     file_path = os.path.join(output_directory, f"beti{file.file_name}")
-                #     with open(file_path, "wb") as file_wr:
-                #         file_wr.write(file.file_data)
                 self.session.close()
                 project_function()
-
-                # r = requests.post(
-                #     f"{api}/api/records", data=json.dumps(datameta), headers=h, verify=False)
-                # assert r.status_code == 201, \
-                #     f"Failed to create record (code: {r.status_code})"
-                # links = r.json()['links']
-                # # Upload files
-                # f = f"{title}.{extension}"
-                # # Initiate the file
-                # data = json.dumps([{"key": f}])
-                # r = requests.post(links["files"], data=data, headers=h, verify=False)
-                # assert r.status_code == 201, \
-                #     f"Failed to create file {f} (code: {r.status_code})"
-                # file_links = r.json()["entries"][0]["links"]
-
-                # # Upload file content by streaming the data
-                # # with open(f, 'rb') as fp:
-                # fp=file_response.content
-                # r = requests.put(
-                #     file_links["content"], data=fp, headers=fh, verify=False)
-                # assert r.status_code == 200, \
-                #     f"Failed to upload file content {f} (code: {r.status_code})"
-
-                # # Commit the file.
-                # r = requests.post(file_links["commit"], headers=h, verify=False)
-                # assert r.status_code == 200, \
-                #     f"Failed to commit file {f} (code: {r.status_code})"
-
-                # # Publish the record
-                # r = requests.post(links["publish"], headers=h, verify=False)
-                # assert r.status_code == 202, \
-                #         f"Failed to publish record (code: {r.status_code})"
     
         
         schema = self.get_service_schema()
