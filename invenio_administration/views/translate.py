@@ -82,21 +82,21 @@ def download_file_and_save(url, target_language, project_id):
                 
                 print(f"File downloaded and saved as {translated_filename}")
                 if target_language == 'ar-SA' and file_extension == 'docx':
-                    update_file = update(ArabicFile).where(ArabicFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content)
+                    update_file = update(ArabicFile).where(ArabicFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content, translate_status='complete')
                 elif target_language == 'en-US' and file_extension == 'docx':
-                    update_file = update(EnglishFile).where(EnglishFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content)
+                    update_file = update(EnglishFile).where(EnglishFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content, translate_status='complete')
                 elif target_language == 'fr-FR' and file_extension == 'docx':
-                    update_file = update(FrenchFile).where(FrenchFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content)
+                    update_file = update(FrenchFile).where(FrenchFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content, translate_status='complete')
                 elif target_language == 'es-ES' and file_extension == 'docx':
-                    update_file = update(SpanishFile).where(SpanishFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content)
+                    update_file = update(SpanishFile).where(SpanishFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content, translate_status='complete')
                 elif target_language == 'ar-SA' and file_extension == 'json':
-                    update_file = update(ArabicMetadata).where(ArabicMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data)
+                    update_file = update(ArabicMetadata).where(ArabicMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data, translate_status='complete')
                 elif target_language == 'en-US' and file_extension == 'json':
-                    update_file = update(EnglishMetadata).where(EnglishMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data)
+                    update_file = update(EnglishMetadata).where(EnglishMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data, translate_status='complete')
                 elif target_language == 'fr-FR' and file_extension == 'json':
-                    update_file = update(FrenchMetadata).where(FrenchMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data)
+                    update_file = update(FrenchMetadata).where(FrenchMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data, translate_status='complete')
                 elif target_language == 'es-ES' and file_extension == 'json':
-                    update_file = update(SpanishMetadata).where(SpanishMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data)
+                    update_file = update(SpanishMetadata).where(SpanishMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data, translate_status='complete')
 
                 session.execute(update_file)
                 session.commit()
@@ -208,15 +208,15 @@ api_key = 'xY55uP6iraCKgrmErbQV-O4w4qe8cxXoCDnmW7Oal'
 # Retrive id_project, project_pass and uploaded from database
 # ..... your code here .....
 def translate_function():
-    arabic_records = session.query(ArabicFile).all() # Retrieve all rows from the 'files' table that are pdf
-    french_records = session.query(FrenchFile).all() # Retrieve all rows from the 'files' table that are pdf
-    spanish_records = session.query(SpanishFile).all()  # Retrieve all rows from the 'files' table that are pdf
-    english_records = session.query(EnglishFile).all() # Retrieve all rows from the 'files' table that are pdf
+    arabic_records = session.query(ArabicFile).filter_by(translate_status=None)  
+    french_records = session.query(FrenchFile).filter_by(translate_status=None)  
+    spanish_records = session.query(SpanishFile).filter_by(translate_status=None)   
+    english_records = session.query(EnglishFile).filter_by(translate_status=None)  
 
-    arabic_metadatas = session.query(ArabicMetadata).all() # Retrieve all rows from the 'files' table that are pdf
-    french_metadatas = session.query(FrenchMetadata).all() # Retrieve all rows from the 'files' table that are pdf
-    spanish_metadatas = session.query(SpanishMetadata).all()  # Retrieve all rows from the 'files' table that are pdf
-    english_metadatas = session.query(EnglishMetadata).all() # Retrieve all rows from the 'files' table that are pdf
+    arabic_metadatas = session.query(ArabicMetadata).filter_by(translate_status=None)  
+    french_metadatas = session.query(FrenchMetadata).filter_by(translate_status=None)  
+    spanish_metadatas = session.query(SpanishMetadata).filter_by(translate_status=None)   
+    english_metadatas = session.query(EnglishMetadata).filter_by(translate_status=None)  
 
 
     for arabic_record in arabic_records:

@@ -46,6 +46,7 @@ class EnglishFile(Base):
     upload_status = Column(String(255))
     original_file_id = Column(Integer, ForeignKey('original_file.id'))
     original_file = relationship("OriginalFile", foreign_keys=[original_file_id])
+    translate_status = Column(String(255))
 class FrenchFile(Base):
     __tablename__ = 'french_file'
 
@@ -62,6 +63,7 @@ class FrenchFile(Base):
     upload_status = Column(String(255))
     original_file_id = Column(Integer, ForeignKey('original_file.id'))
     original_file = relationship("OriginalFile", foreign_keys=[original_file_id])
+    translate_status = Column(String(255))
 class SpanishFile(Base):
     __tablename__ = 'spanish_file'
 
@@ -78,6 +80,7 @@ class SpanishFile(Base):
     upload_status = Column(String(255))
     original_file_id = Column(Integer, ForeignKey('original_file.id'))
     original_file = relationship("OriginalFile", foreign_keys=[original_file_id])
+    translate_status = Column(String(255))
 class ArabicFile(Base):
     __tablename__ = 'arabic_file'
 
@@ -94,6 +97,7 @@ class ArabicFile(Base):
     upload_status = Column(String(255))
     original_file_id = Column(Integer, ForeignKey('original_file.id'))
     original_file = relationship("OriginalFile", foreign_keys=[original_file_id])
+    translate_status = Column(String(255))
 class EnglishMetadata(Base):
     __tablename__ = 'english_metadata'
 
@@ -110,6 +114,7 @@ class EnglishMetadata(Base):
     upload_status = Column(String(255))
     original_file_id = Column(Integer, ForeignKey('original_file.id'))
     original_file = relationship("OriginalFile", foreign_keys=[original_file_id])
+    translate_status = Column(String(255))
 class FrenchMetadata(Base):
     __tablename__ = 'french_metadata'
 
@@ -126,6 +131,7 @@ class FrenchMetadata(Base):
     upload_status = Column(String(255))
     original_file_id = Column(Integer, ForeignKey('original_file.id'))
     original_file = relationship("OriginalFile", foreign_keys=[original_file_id])
+    translate_status = Column(String(255))
 class ArabicMetadata(Base):
     __tablename__ = 'arabic_metadata'
 
@@ -142,6 +148,7 @@ class ArabicMetadata(Base):
     upload_status = Column(String(255))
     original_file_id = Column(Integer, ForeignKey('original_file.id'))
     original_file = relationship("OriginalFile", foreign_keys=[original_file_id])
+    translate_status = Column(String(255))
 
 class SpanishMetadata(Base):
     __tablename__ = 'spanish_metadata'
@@ -159,3 +166,4 @@ class SpanishMetadata(Base):
     upload_status = Column(String(255))
     original_file_id = Column(Integer, ForeignKey('original_file.id'))
     original_file = relationship("OriginalFile", foreign_keys=[original_file_id])
+    translate_status = Column(String(255))
