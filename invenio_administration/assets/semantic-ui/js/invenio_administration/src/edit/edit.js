@@ -17,7 +17,7 @@ const pid = JSON.parse(domContainer.dataset.pid);
 const formFields = JSON.parse(domContainer.dataset.formFields);
 const listUIEndpoint = domContainer.dataset.listEndpoint;
 
-if (apiEndpoint == "https://127.0.0.1:5000/api/banners") {
+if (apiEndpoint == "https://gresis.org/api/banners") {
   ReactDOM.render(<h1>Resources Successfully Harvesred</h1>, domContainer);
 } else {
   ReactDOM.render(
