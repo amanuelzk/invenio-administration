@@ -3,7 +3,7 @@ import os
 import requests
 from .model import *
 
-api = "https://127.0.0.1:5000"
+api = "https://gresis.org"
 token = "m1VuHtbNzvxjZuLfBs8PeIVsnAEETt31K2gnmPwKVQxZyOi7BZruP1iO0klT"
 
 
