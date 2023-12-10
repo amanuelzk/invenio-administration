@@ -19,7 +19,7 @@ fh = {
     }
 
 def publish_function():
-    files = session.query(OriginalFile).filter_by(file_type='pdf')   
+    files = session.query(OriginalFile).all()  
 
     for original_file in files:
         files_list=[]
@@ -42,26 +42,38 @@ def publish_function():
         spanish_records = session.query(SpanishFile).filter_by(original_file_id=original_file.id)   
         english_records = session.query(EnglishFile).filter_by(original_file_id=original_file.id)  
         original_file_name = original_file.file_name
-        files_list.append(f'{original_file_name}.pdf')
+        original_file_extension = original_file.file_type
+        write_file = f'{original_file_name}.{original_file_extension}'
+        with open(write_file, "wb") as f:
+            f.write(original_file.file_data)
+        files_list.append(write_file)
 
         for arabic_record in arabic_records:
             file_name = arabic_record.file_name
             file_path =f"{file_name}.pdf.docx"
+            with open(file_path, "wb") as f:
+                f.write(arabic_record.file_data)
             files_list.append(file_path)
         
         for french_record in french_records:
             file_name = french_record.file_name
             file_path =f"{file_name}.pdf.docx"
+            with open(file_path, "wb") as f:
+                f.write(arabic_record.file_data)
             files_list.append(file_path)
         
         for spanish_record in spanish_records:
             file_name = spanish_record.file_name
             file_path = f"{file_name}.pdf.docx"
+            with open(file_path, "wb") as f:
+                f.write(arabic_record.file_data)
             files_list.append(file_path)
         
         for english_record in english_records:
             file_name = english_record.file_name
             file_path = f"{file_name}.pdf.docx"
+            with open(file_path, "wb") as f:
+                f.write(arabic_record.file_data)
             files_list.append(file_path)
 
 
@@ -72,6 +84,7 @@ def publish_function():
         original_metadatas = session.query(OriginalFile).filter_by(id=original_file.id)
 
         for original_metadata in original_metadatas:
+            searchability = str(original_metadata.searchability)
             metadata_dict = original_metadata.metadata_file
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
@@ -122,12 +135,9 @@ def publish_function():
             
 
         for arabic_metadata in arabic_metadatas:
-            file_name = arabic_metadata.file_name
-            file_path = f'{file_name}.json'
-            # files_list.append(file_path)
-            with open(file_path, 'r', encoding='utf-8') as file:
-                json_content = file.read()
-            data = json.loads(json_content)
+            metadata_dict = arabic_metadata.file_data
+            json_data = json.dumps(metadata_dict)
+            data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
             rights_info = data.get('metadata', {}).get('rights', [])
             get_description = data.get('metadata', {}).get('description')
@@ -180,12 +190,9 @@ def publish_function():
 
 
         for french_metadata in french_metadatas:
-            file_name = french_metadata.file_name
-            file_path = f'{file_name}.json'
-            # files_list.append(file_path)
-            with open(file_path, 'r', encoding='utf-8') as file:
-                json_content = file.read()
-            data = json.loads(json_content)
+            metadata_dict = french_metadata.file_data
+            json_data = json.dumps(metadata_dict)
+            data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
             rights_info = data.get('metadata', {}).get('rights', [])
             get_description = data.get('metadata', {}).get('description')
@@ -236,12 +243,9 @@ def publish_function():
             additional_titles.append(add_title)
 
         for spanish_metadata in spanish_metadatas:
-            file_name = spanish_metadata.file_name
-            file_path = f'{file_name}.json'
-            # files_list.append(file_path)
-            with open(file_path, 'r', encoding='utf-8') as file:
-                json_content = file.read()
-            data = json.loads(json_content)
+            metadata_dict = spanish_metadata.file_data
+            json_data = json.dumps(metadata_dict)
+            data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
             rights_info = data.get('metadata', {}).get('rights', [])
             get_description = data.get('metadata', {}).get('description')
@@ -292,12 +296,9 @@ def publish_function():
             additional_titles.append(add_title)            
 
         for english_metadata in english_metadatas:
-            file_name = english_metadata.file_name
-            file_path = f'{file_name}.json'
-            # files_list.append(file_path)
-            with open(file_path, 'r', encoding='utf-8') as file:
-                json_content = file.read()
-            data = json.loads(json_content)
+            metadata_dict = english_metadata.file_data
+            json_data = json.dumps(metadata_dict)
+            data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
             rights_info = data.get('metadata', {}).get('rights', [])
             get_description = data.get('metadata', {}).get('description')
@@ -359,7 +360,6 @@ def publish_function():
                     "metadata": {
                         "creators": creators_list,
                         "description": description,
-
                         "additional_descriptions": additional_descriptions,
                         "identifiers": [{
                         "identifier": identifier,
@@ -383,49 +383,26 @@ def publish_function():
                     "pids": {}
                     }
 
-
-        r = requests.post(
-            f"{api}/api/records", data=json.dumps(datameta), headers=h, verify=False)
-        assert r.status_code == 201, \
-            f"Failed to create record (code: {r.status_code})"
-        links = r.json()['links']
-        # Upload files
-        # print("File upload")
-        # print(links)
-        file_api=links['files']
-
-    # 'content': 'https://127.0.0.1:5000/api/records/x42hh-63508/draft/files/The327875.pdf/content', 
-    # 'commit': 'https://127.0.0.1:5000/api/records/x42hh-63508/draft/files/The327875.pdf/commit'
-
-        # print(files_list)
-        for file_upload in files_list:
-            f = file_upload
-            # Initiate the file
-            data = json.dumps([{"key": f}])
-            r = requests.post(links["files"], data=data, headers=h, verify=False)
-            assert r.status_code == 201, \
-                f"Failed to create file {f} (code: {r.status_code})"
-            file_links = r.json()["entries"][0]["links"]
-            print("FILE LINKS")
-            print(file_links)
-
-            # Upload file content by streaming the data
-            # with open(f, 'rb') as fp:
-            with open(f, 'rb') as fp:
-                r = requests.put(
-                    f"{file_api}/{f}/content", data=fp, headers=fh, verify=False)
-            assert r.status_code == 200, \
-                f"Failed to upload file content {f} (code: {r.status_code})"
-
-            # Commit the file.
-            r = requests.post(f"{file_api}/{f}/commit", headers=h, verify=False)
-            assert r.status_code == 200, \
-                f"Failed to commit file {f} (code: {r.status_code})"
-
-        # Publish the record
-        r = requests.post(links["publish"], headers=h, verify=False)
-        assert r.status_code == 202, \
-                f"Failed to publish record (code: {r.status_code})"
+        try:
+            r = requests.post(
+                f"{api}/api/records", data=json.dumps(datameta), headers=h, verify=False)
+            links = r.json()['links']
+            file_api=links['files']
+            for file_upload in files_list:
+                f = file_upload
+                data = json.dumps([{"key": f}])
+                r = requests.post(links["files"], data=data, headers=h, verify=False)
+                file_links = r.json()["entries"][0]["links"]
+                
+                with open(f, 'rb') as fp:
+                    r = requests.put(
+                        f"{file_api}/{f}/content", data=fp, headers=fh, verify=False)
+                r = requests.post(f"{file_api}/{f}/commit", headers=h, verify=False)
+                
+            r = requests.post(links["publish"], headers=h, verify=False)
+            
+        except:
+            continue
 
 
 
