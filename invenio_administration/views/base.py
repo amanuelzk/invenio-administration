@@ -346,9 +346,9 @@ class AdminFormView(AdminResourceBaseView):
             token = "m1VuHtbNzvxjZuLfBs8PeIVsnAEETt31K2gnmPwKVQxZyOi7BZruP1iO0klT"
             sickle = Sickle(oaiurl)
             if(oaiset==''):
-                records = sickle.ListRecords(metadataPrefix='oai_dc')
+                records = sickle.ListRecords(metadataPrefix='oai_dc', ignore_deleted=True)
             else:
-                records = sickle.ListRecords(metadataPrefix='oai_dc', set=oaiset)
+                records = sickle.ListRecords(metadataPrefix='oai_dc', set=oaiset, ignore_deleted=True)
             @sleep_and_retry
             @limits(calls=1, period=10) # 1 request per second
             def make_api_request(req_url):
