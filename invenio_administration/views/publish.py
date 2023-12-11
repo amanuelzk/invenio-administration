@@ -19,7 +19,7 @@ fh = {
     }
 
 def publish_function():
-    files = session.query(OriginalFile).all()  
+    files = session.query(OriginalFile).filter_by(publish_status=None)  
 
     for original_file in files:
         files_list=[]
@@ -403,6 +403,10 @@ def publish_function():
             
         except:
             continue
+
+        update_file = update(OriginalFile).where(OriginalFile.id==original_file.id).values(publish_status='published')
+        session.execute(update_file)
+        session.commit()
 
 
 
