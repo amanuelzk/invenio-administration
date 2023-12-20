@@ -95,7 +95,7 @@ def publish_function():
             get_rights = data.get('metadata', {}).get('rights', [])
             for right in get_rights:
                 rights_list.append(right)
-            get_subject = data.get('metadata', {}).get('subject', [])
+            get_subject = data.get('metadata', {}).get('subjects', [])
             for subject in get_subject:
                 subjects_list.append(subject)
             rectitle = data.get('metadata', {}).get('title','')
