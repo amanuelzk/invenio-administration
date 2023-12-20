@@ -126,15 +126,7 @@ def project_creation(file_paths):
                 for original_file in original_file_row:
                     original_file_id = original_file.id
          
-                if target_lang == 'ar-SA' and file_extension == '.pdf':
-                    new_file_save = ArabicFile(project_status=uploaded, project_id=project_id, project_pass=project_pass, original_file_id=original_file_id)
-                elif target_lang == 'en-US' and file_extension == '.pdf':
-                    new_file_save = EnglishFile(project_status=uploaded, project_id=project_id, project_pass=project_pass, original_file_id=original_file_id)
-                elif target_lang == 'fr-FR' and file_extension == '.pdf':
-                    new_file_save = FrenchFile(project_status=uploaded, project_id=project_id, project_pass=project_pass, original_file_id=original_file_id)
-                elif target_lang == 'es-ES' and file_extension == '.pdf':
-                    new_file_save = SpanishFile(project_status=uploaded, project_id=project_id, project_pass=project_pass, original_file_id=original_file_id)
-                elif target_lang == 'ar-SA' and file_extension == '.json':
+                if target_lang == 'ar-SA' and file_extension == '.json':
                     new_file_save = ArabicMetadata(project_status=uploaded, project_id=project_id, project_pass=project_pass, original_file_id=original_file_id)
                 elif target_lang == 'en-US' and file_extension == '.json':
                     new_file_save = EnglishMetadata(project_status=uploaded, project_id=project_id, project_pass=project_pass, original_file_id=original_file_id)
@@ -158,15 +150,9 @@ target_languages = ['ar-SA', 'en-US', 'fr-FR', 'es-ES']
 
 matecat_languages = get_matecat_languages(base_url, api_key)
 def project_function():
-    file_paths = []
-    metadata_paths=[]
-    files = session.query(OriginalFile).filter_by(file_type='pdf', project_status=None)  
+    metadata_paths=[]  
+    files = session.query(OriginalFile).filter_by(project_status=None)  
     output_directory = "."                
-    for file in files:
-        dbfile_path = os.path.join(output_directory, f"{file.file_name}.pdf")
-        with open(dbfile_path, "wb") as file_wr:
-            file_wr.write(file.file_data)
-        file_paths.append(dbfile_path)
 
     for metadata_file in files:
         dbfile_path = os.path.join(output_directory, f"metadata_{metadata_file.file_name}.json")
@@ -175,5 +161,4 @@ def project_function():
         with open(dbfile_path, 'wb') as file_wr:
             file_wr.write(json_data.encode('utf-8'))
         metadata_paths.append(dbfile_path)
-    project_creation(file_paths)
     project_creation(metadata_paths)

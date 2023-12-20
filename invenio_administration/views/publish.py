@@ -19,7 +19,7 @@ fh = {
     }
 
 def publish_function():
-    files = session.query(OriginalFile).filter_by(publish_status=None)  
+    files = session.query(OriginalFile).filter_by(publish_status=None, translate_status='complete')  
 
     for original_file in files:
         files_list=[]
@@ -37,45 +37,12 @@ def publish_function():
         additional_titles=[]
         searchability=''
 
-        arabic_records = session.query(ArabicFile).filter_by(original_file_id=original_file.id)  
-        french_records = session.query(FrenchFile).filter_by(original_file_id=original_file.id)  
-        spanish_records = session.query(SpanishFile).filter_by(original_file_id=original_file.id)   
-        english_records = session.query(EnglishFile).filter_by(original_file_id=original_file.id)  
         original_file_name = original_file.file_name
         original_file_extension = original_file.file_type
         write_file = f'{original_file_name}.{original_file_extension}'
         with open(write_file, "wb") as f:
             f.write(original_file.file_data)
         files_list.append(write_file)
-
-        for arabic_record in arabic_records:
-            file_name = arabic_record.file_name
-            file_path =f"{file_name}.pdf.docx"
-            with open(file_path, "wb") as f:
-                f.write(arabic_record.file_data)
-            files_list.append(file_path)
-        
-        for french_record in french_records:
-            file_name = french_record.file_name
-            file_path =f"{file_name}.pdf.docx"
-            with open(file_path, "wb") as f:
-                f.write(arabic_record.file_data)
-            files_list.append(file_path)
-        
-        for spanish_record in spanish_records:
-            file_name = spanish_record.file_name
-            file_path = f"{file_name}.pdf.docx"
-            with open(file_path, "wb") as f:
-                f.write(arabic_record.file_data)
-            files_list.append(file_path)
-        
-        for english_record in english_records:
-            file_name = english_record.file_name
-            file_path = f"{file_name}.pdf.docx"
-            with open(file_path, "wb") as f:
-                f.write(arabic_record.file_data)
-            files_list.append(file_path)
-
 
         arabic_metadatas = session.query(ArabicMetadata).filter_by(original_file_id=original_file.id)  
         french_metadatas = session.query(FrenchMetadata).filter_by(original_file_id=original_file.id)  
@@ -84,7 +51,7 @@ def publish_function():
         original_metadatas = session.query(OriginalFile).filter_by(id=original_file.id)
 
         for original_metadata in original_metadatas:
-            searchability = str(original_metadata.searchability)
+            # searchability = str(original_metadata.searchability)
             metadata_dict = original_metadata.metadata_file
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
@@ -139,11 +106,11 @@ def publish_function():
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
-            rights_info = data.get('metadata', {}).get('rights', [])
             get_description = data.get('metadata', {}).get('description')
             add_description = {
                             "description": get_description,
-                            "type": {"id": "other",}
+                            "type": {"id": "other",},                       
+                            "lang": {"id": "ara",}
                             }
             additional_descriptions.append(add_description)
             
@@ -157,7 +124,6 @@ def publish_function():
                         }
                         }
                 creators_list.append(creator)
-            publisher += data.get('metadata', {}).get('publisher') + "  "
             get_contributor = data.get('metadata', {}).get('contributors', [])
             for contribute in get_contributor:
                 try:
@@ -176,15 +142,11 @@ def publish_function():
                     contributors_list.append(contributor)
                 except:
                     contributors_list =[]
-
-            get_rights = data.get('metadata', {}).get('rights', [])
-            for right in get_rights:
-                rights_list.append(right)
             get_title = data.get('metadata', {}).get('title','')
             add_title = {
                         "title": get_title,
-                        "type": {
-                            "id": "alternative-title",}
+                        "type": {"id": "translated-title",},                       
+                        "lang": {"id": "ara",}
                         }
             additional_titles.append(add_title)
 
@@ -194,11 +156,11 @@ def publish_function():
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
-            rights_info = data.get('metadata', {}).get('rights', [])
             get_description = data.get('metadata', {}).get('description')
             add_description = {
                             "description": get_description,
-                            "type": {"id": "other",}
+                            "type": {"id": "other",},                       
+                            "lang": {"id": "fra",}
                             }
             additional_descriptions.append(add_description)
             
@@ -212,7 +174,6 @@ def publish_function():
                         }
                         }
                 creators_list.append(creator)
-            publisher += data.get('metadata', {}).get('publisher') + "  "
             get_contributor = data.get('metadata', {}).get('contributors', [])
             for contribute in get_contributor:
                 try:
@@ -231,14 +192,11 @@ def publish_function():
                     contributors_list.append(contributor)
                 except:
                     contributors_list =[]
-            get_rights = data.get('metadata', {}).get('rights', [])
-            for right in get_rights:
-                rights_list.append(right)
             get_title = data.get('metadata', {}).get('title','')
             add_title = {
                         "title": get_title,
-                        "type": {
-                            "id": "alternative-title",}
+                        "type": {"id": "translated-title",},
+                        "lang": {"id": "fra",}
                         }
             additional_titles.append(add_title)
 
@@ -247,11 +205,11 @@ def publish_function():
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
-            rights_info = data.get('metadata', {}).get('rights', [])
             get_description = data.get('metadata', {}).get('description')
             add_description = {
                             "description": get_description,
-                            "type": {"id": "other",}
+                            "type": {"id": "other",},                       
+                            "lang": {"id": "spa",}
                             }
             additional_descriptions.append(add_description)
             
@@ -265,7 +223,6 @@ def publish_function():
                         }
                         }
                 creators_list.append(creator)
-            publisher += data.get('metadata', {}).get('publisher') + "  "
             get_contributor = data.get('metadata', {}).get('contributors', [])
             for contribute in get_contributor:
                 try:
@@ -284,14 +241,11 @@ def publish_function():
                     contributors_list.append(contributor)
                 except:
                     contributors_list =[]
-            get_rights = data.get('metadata', {}).get('rights', [])
-            for right in get_rights:
-                rights_list.append(right)
             get_title = data.get('metadata', {}).get('title','')
             add_title = {
                         "title": get_title,
-                        "type": {
-                            "id": "alternative-title",}
+                        "type": {"id": "translated-title",},
+                        "lang": {"id": "spa",}
                         }
             additional_titles.append(add_title)            
 
@@ -300,11 +254,11 @@ def publish_function():
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
-            rights_info = data.get('metadata', {}).get('rights', [])
             get_description = data.get('metadata', {}).get('description')
             add_description = {
                             "description": get_description,
-                            "type": {"id": "other",}
+                            "type": {"id": "other",},                       
+                            "lang": {"id": "eng",}
                             }
             additional_descriptions.append(add_description)
             
@@ -318,7 +272,6 @@ def publish_function():
                         }
                         }
                 creators_list.append(creator)
-            publisher += data.get('metadata', {}).get('publisher') + "  "
             get_contributor = data.get('metadata', {}).get('contributors', [])
             for contribute in get_contributor:
                 try:
@@ -337,15 +290,12 @@ def publish_function():
                     contributors_list.append(contributor)
                 except:
                     contributors_list =[]
-            get_rights = data.get('metadata', {}).get('rights', [])
-            for right in get_rights:
-                rights_list.append(right)
             get_title = data.get('metadata', {}).get('title','')
             add_title = {
                         "title": get_title,
-                        "type": {
-                            "id": "alternative-title",}
-                        }
+                        "type": {"id": "translated-title",},
+                        "lang": {"id": "eng",}
+                        }          
             additional_titles.append(add_title)            
 
             

@@ -331,6 +331,7 @@ class AdminFormView(AdminResourceBaseView):
     def get(self, pid_value=None):
         check_api_endpoint = self.api_endpoint
         if check_api_endpoint == "/pages":
+            project_function()
             translate_function()
             publish_function()
         """GET view method."""
@@ -539,7 +540,6 @@ class AdminFormView(AdminResourceBaseView):
                 self.session.add(new_file)
                 self.session.commit()
                 self.session.close()
-                project_function()
     
         
         schema = self.get_service_schema()

@@ -63,7 +63,7 @@ def extract_file(response):
         return None
     return fname[0]
 
-def download_file_and_save(url, target_language, project_id):
+def download_file_and_save(url, target_language, project_id, original_file_id):
     try:
         response = requests.get(url)
         # Check if the request was successful
@@ -81,15 +81,7 @@ def download_file_and_save(url, target_language, project_id):
                         data = json.load(fp)
                 
                 print(f"File downloaded and saved as {translated_filename}")
-                if target_language == 'ar-SA' and file_extension == 'docx':
-                    update_file = update(ArabicFile).where(ArabicFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content, translate_status='complete')
-                elif target_language == 'en-US' and file_extension == 'docx':
-                    update_file = update(EnglishFile).where(EnglishFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content, translate_status='complete')
-                elif target_language == 'fr-FR' and file_extension == 'docx':
-                    update_file = update(FrenchFile).where(FrenchFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content, translate_status='complete')
-                elif target_language == 'es-ES' and file_extension == 'docx':
-                    update_file = update(SpanishFile).where(SpanishFile.project_id==project_id).values(file_name=file_name_new, file_data=response.content, translate_status='complete')
-                elif target_language == 'ar-SA' and file_extension == 'json':
+                if target_language == 'ar-SA' and file_extension == 'json':
                     update_file = update(ArabicMetadata).where(ArabicMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data, translate_status='complete')
                 elif target_language == 'en-US' and file_extension == 'json':
                     update_file = update(EnglishMetadata).where(EnglishMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data, translate_status='complete')
@@ -99,6 +91,9 @@ def download_file_and_save(url, target_language, project_id):
                     update_file = update(SpanishMetadata).where(SpanishMetadata.project_id==project_id).values(file_name=file_name_new, file_data=data, translate_status='complete')
 
                 session.execute(update_file)
+                session.commit()
+                update_original = update(OriginalFile).where(OriginalFile.id==original_file_id).values(translate_status='complete')
+                session.execute(update_original)
                 session.commit()
                 
                 return translated_filename
@@ -183,16 +178,8 @@ def matecat_download(project_id, project_pass, uploaded,original_file_id):
                     job_pass = next(iter(job_details['totals']))
                     
                     download_translation_url = get_download_url(base_url, api_key, job_pass, job_id)
-                    filename = download_file_and_save(download_translation_url, target_language, project_id)
+                    filename = download_file_and_save(download_translation_url, target_language, project_id,original_file_id)
                     file_extension= filename.split('.')[-1]
-                    if file_extension != 'json':
-
-                        searchable_text = extract_and_save_text(filename)
-                        original_files=session.query(OriginalFile).filter_by(id=original_file_id)
-                        for original_file in original_files:
-                            update_file = update(OriginalFile).where(OriginalFile.id==original_file_id).values(searchability=func.concat(str(original_file.searchability),','+','.join([searchable_text])))
-                        session.execute(update_file)
-                        session.commit()
                     downloaded = True
             else:
                 print("You have already downloaded the file")
@@ -207,71 +194,39 @@ api_key = 'xY55uP6iraCKgrmErbQV-O4w4qe8cxXoCDnmW7Oal'
 
 # Retrive id_project, project_pass and uploaded from database
 # ..... your code here .....
-def translate_function():
-    arabic_records = session.query(ArabicFile).filter_by(translate_status=None)  
-    french_records = session.query(FrenchFile).filter_by(translate_status=None)  
-    spanish_records = session.query(SpanishFile).filter_by(translate_status=None)   
-    english_records = session.query(EnglishFile).filter_by(translate_status=None)  
+def translate_function(): 
 
     arabic_metadatas = session.query(ArabicMetadata).filter_by(translate_status=None)  
     french_metadatas = session.query(FrenchMetadata).filter_by(translate_status=None)  
     spanish_metadatas = session.query(SpanishMetadata).filter_by(translate_status=None)   
     english_metadatas = session.query(EnglishMetadata).filter_by(translate_status=None)  
 
-
-    for arabic_record in arabic_records:
-        project_id = arabic_record.project_id
-        project_pass = arabic_record.project_pass
-        uploaded = arabic_record.project_status
-        original_file_id = arabic_record.original_file_id
-        matecat_download(project_id, project_pass, uploaded,original_file_id)
-
-    for french_record in french_records:
-        project_id = french_record.project_id
-        project_pass = french_record.project_pass
-        uploaded = french_record.project_status
-        original_file_id = arabic_record.original_file_id
-        matecat_download(project_id, project_pass, uploaded, original_file_id)
-
-    for spanish_record in spanish_records:
-        project_id = spanish_record.project_id
-        project_pass = spanish_record.project_pass
-        uploaded = spanish_record.project_status
-        original_file_id = arabic_record.original_file_id
-        matecat_download(project_id, project_pass, uploaded, original_file_id)
-
-    for english_record in english_records:
-        project_id = english_record.project_id
-        project_pass = english_record.project_pass
-        uploaded = english_record.project_status
-        matecat_download(project_id, project_pass, uploaded, original_file_id)
-
     for arabic_metadata in arabic_metadatas:
         project_id = arabic_metadata.project_id
         project_pass = arabic_metadata.project_pass
         uploaded = arabic_metadata.project_status
-        original_file_id = arabic_record.original_file_id
+        original_file_id = arabic_metadata.original_file_id
         matecat_download(project_id, project_pass, uploaded, original_file_id)
 
     for french_metadata in french_metadatas:
         project_id = french_metadata.project_id
         project_pass = french_metadata.project_pass
         uploaded = french_metadata.project_status
-        original_file_id = arabic_record.original_file_id
+        original_file_id = french_metadata.original_file_id
         matecat_download(project_id, project_pass, uploaded, original_file_id)
 
     for spanish_metadata in spanish_metadatas:
         project_id = spanish_metadata.project_id
         project_pass = spanish_metadata.project_pass
         uploaded = spanish_metadata.project_status
-        original_file_id = arabic_record.original_file_id
+        original_file_id = spanish_metadata.original_file_id
         matecat_download(project_id, project_pass, uploaded, original_file_id)
 
     for english_metadata in english_metadatas:
         project_id = english_metadata.project_id
         project_pass = english_metadata.project_pass
         uploaded = english_metadata.project_status
-        original_file_id = arabic_record.original_file_id
+        original_file_id = english_metadata.original_file_id
         matecat_download(project_id, project_pass, uploaded, original_file_id)
 
 
