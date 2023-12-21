@@ -30,6 +30,7 @@ class OriginalFile(Base):
     publish_status = Column(String(255))
     searchability = Column(LONGTEXT)
     project_status = Column(String(255))
+    translate_status = Column(String(255))
 class EnglishFile(Base):
     __tablename__ = 'english_file'
 
