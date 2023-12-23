@@ -14,6 +14,8 @@ from functools import partial
 import os
 from ratelimit import limits, sleep_and_retry
 from datetime import datetime
+from plyer import notification
+
 import time
 from bs4 import BeautifulSoup
 from .translate import *
@@ -314,36 +316,38 @@ class AdminFormView(AdminResourceBaseView):
     display_read_only = True
 
     """Basic form view."""
-    host = "localhost"
-    user = "root"
-    password = ""
-    database = "file_storage"
-
-    connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}/{database}"
-
-    engine = create_engine(connection_string)
-    Base.metadata.create_all(engine)
-
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
 
     def get(self, pid_value=None):
         check_api_endpoint = self.api_endpoint
+        
         if check_api_endpoint == "/pages":
             project_function()
             translate_function()
             publish_function()
-        """GET view method."""
-        oaiurl = ""
-        for record in BannerModel.query.filter_by(id=pid_value):
-            oaiurl = record.oai_url
-            oaiset = record.set_name
-            reponame = record.repo_name
+            return render_template("invenio_administration/publish.html")
 
 
-        if self.url == "/banners/<pid_value>/edit":
+        elif self.url == "/banners/<pid_value>/edit":
+        #     # Start new code
             api = "https://127.0.0.1:5000"
+            host = "localhost"
+            user = "root"
+            password = ""
+            database = "file_storage"
+
+            connection_string = f"mysql+mysqlconnector://{user}:{password}@{host}/{database}"
+
+            engine = create_engine(connection_string)
+            Base.metadata.create_all(engine)
+
+            Session = sessionmaker(bind=engine)
+            session = Session()
+            oaiurl = ""
+            for record in BannerModel.query.filter_by(id=pid_value):
+                oaiurl = record.oai_url
+                oaiset = record.set_name
+                reponame = record.repo_name
+
             token = "m1VuHtbNzvxjZuLfBs8PeIVsnAEETt31K2gnmPwKVQxZyOi7BZruP1iO0klT"
             sickle = Sickle(oaiurl)
             if(oaiset==''):
@@ -482,7 +486,7 @@ class AdminFormView(AdminResourceBaseView):
                         "version": "v1"
                     },
                     "custom_fields": {
-                        "invisible_search": ""
+                        "invisible_search": "testforuniquetextonorigintochecksearchlongtextinvisiblesearch"
                     },
                     "pids": {}
                     }
@@ -510,7 +514,7 @@ class AdminFormView(AdminResourceBaseView):
                 file_name_short=title_concat+rec_url_split
                 output_directory='.'
                 rec_response = make_api_request(rec_url)
-                rec_path = os.path.join(output_directory, f"rec_{title}.html")
+                rec_path = os.path.join(output_directory, f"rec_{title_concat}.html")
                 
                 with open(rec_path, "wb") as file:
                     file.write(rec_response.content)
@@ -527,6 +531,7 @@ class AdminFormView(AdminResourceBaseView):
                     file_url=element['content']
                 except:
                     continue
+                
                 file_response = make_api_request(file_url)
                 content_type = file_response.headers.get("Content-Type")
                 slash = content_type.split('/')
@@ -537,25 +542,35 @@ class AdminFormView(AdminResourceBaseView):
                 with open(file_path, "wb") as file:
                     file.write(file_response.content)
                 new_file = OriginalFile(file_name=file_name_short, file_data=file_response.content, file_type=extension,metadata_file=datameta)
-                self.session.add(new_file)
-                self.session.commit()
-                self.session.close()
+                session.add(new_file)
+                session.commit()
+                row_count = session.query(OriginalFile).count()
+
+                notification.notify(
+                    title="Number of total harvested records",
+                    message=str(row_count),
+                    app_name="GreSIS",
+                    timeout=10,  # Notification will be displayed for 10 seconds
+                )
+
+                session.close()
+            return render_template("invenio_administration/harvest.html")
     
-        
-        schema = self.get_service_schema()
-        serialized_schema = self._schema_to_json(schema)
-        form_fields = self.form_fields
-        return self.render(
-            **{
-                "resource_schema": serialized_schema,
-                "form_fields": form_fields,
-                "pid": pid_value,
-                "api_endpoint": self.get_api_endpoint(),
-                "title": self.title,
-                "list_endpoint": self.get_list_view_endpoint(),
-                "ui_config": self.form_fields,
-            }
-        )
+        else:
+            schema = self.get_service_schema()
+            serialized_schema = self._schema_to_json(schema)
+            form_fields = self.form_fields
+            return self.render(
+                **{
+                    "resource_schema": serialized_schema,
+                    "form_fields": form_fields,
+                    "pid": pid_value,
+                    "api_endpoint": self.get_api_endpoint(),
+                    "title": self.title,
+                    "list_endpoint": self.get_list_view_endpoint(),
+                    "ui_config": self.form_fields
+                }
+            )
 
 
 class AdminResourceEditView(AdminFormView):

@@ -1,5 +1,6 @@
 import json
 import os
+from plyer import notification
 import requests
 from .model import *
 
@@ -19,8 +20,7 @@ fh = {
     }
 
 def publish_function():
-    files = session.query(OriginalFile).filter_by(publish_status=None, translate_status='complete')  
-
+    files = session.query(OriginalFile).filter_by(publish_status=None, translate_status='complete')
     for original_file in files:
         files_list=[]
         creators_list=[]
@@ -106,13 +106,16 @@ def publish_function():
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
-            get_description = data.get('metadata', {}).get('description')
-            add_description = {
-                            "description": get_description,
-                            "type": {"id": "other",},                       
-                            "lang": {"id": "ara",}
-                            }
-            additional_descriptions.append(add_description)
+            get_description = data.get('metadata', {}).get('description','')
+            if get_description == '':
+                additional_descriptions=[]
+            else:
+                add_description = {
+                                "description": get_description,
+                                "type": {"id": "other",},                       
+                                "lang": {"id": "ara",}
+                                }
+                additional_descriptions.append(add_description)
             
             for author in creators_info:
                 person_or_org = author.get('person_or_org',{})
@@ -156,13 +159,16 @@ def publish_function():
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
-            get_description = data.get('metadata', {}).get('description')
-            add_description = {
-                            "description": get_description,
-                            "type": {"id": "other",},                       
-                            "lang": {"id": "fra",}
-                            }
-            additional_descriptions.append(add_description)
+            get_description = data.get('metadata', {}).get('description','')
+            if get_description == '':
+                additional_descriptions=[]
+            else:
+                add_description = {
+                                "description": get_description,
+                                "type": {"id": "other",},                       
+                                "lang": {"id": "fra",}
+                                }
+                additional_descriptions.append(add_description)
             
             for author in creators_info:
                 person_or_org = author.get('person_or_org',{})
@@ -205,13 +211,16 @@ def publish_function():
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
-            get_description = data.get('metadata', {}).get('description')
-            add_description = {
-                            "description": get_description,
-                            "type": {"id": "other",},                       
-                            "lang": {"id": "spa",}
-                            }
-            additional_descriptions.append(add_description)
+            get_description = data.get('metadata', {}).get('description','')
+            if get_description == '':
+                additional_descriptions=[]
+            else:
+                add_description = {
+                                "description": get_description,
+                                "type": {"id": "other",},                       
+                                "lang": {"id": "spa",}
+                                }
+                additional_descriptions.append(add_description)
             
             for author in creators_info:
                 person_or_org = author.get('person_or_org',{})
@@ -254,13 +263,16 @@ def publish_function():
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
             creators_info = data.get('metadata', {}).get('creators', [])
-            get_description = data.get('metadata', {}).get('description')
-            add_description = {
-                            "description": get_description,
-                            "type": {"id": "other",},                       
-                            "lang": {"id": "eng",}
-                            }
-            additional_descriptions.append(add_description)
+            get_description = data.get('metadata', {}).get('description','')
+            if get_description == '':
+                additional_descriptions=[]
+            else:
+                add_description = {
+                                "description": get_description,
+                                "type": {"id": "other",},                       
+                                "lang": {"id": "eng",}
+                                }
+                additional_descriptions.append(add_description)
             
             for author in creators_info:
                 person_or_org = author.get('person_or_org',{})
@@ -335,28 +347,32 @@ def publish_function():
 
         try:
             r = requests.post(
-                f"{api}/api/records", data=json.dumps(datameta), headers=h, verify=False)
+                    f"{api}/api/records", data=json.dumps(datameta), headers=h, verify=False)
             links = r.json()['links']
-            file_api=links['files']
+     
             for file_upload in files_list:
                 f = file_upload
-                data = json.dumps([{"key": f}])
-                r = requests.post(links["files"], data=data, headers=h, verify=False)
-                file_links = r.json()["entries"][0]["links"]
+            data = json.dumps([{"key": f}])
+            r = requests.post(links["files"], data=data, headers=h, verify=False)
+            file_links = r.json()["entries"][0]["links"]
+            with open(f, 'rb') as fp:
+                r = requests.put(file_links["content"], data=fp, headers=fh, verify=False)
                 
-                with open(f, 'rb') as fp:
-                    r = requests.put(
-                        f"{file_api}/{f}/content", data=fp, headers=fh, verify=False)
-                r = requests.post(f"{file_api}/{f}/commit", headers=h, verify=False)
-                
+            r = requests.post(file_links["commit"], headers=h, verify=False)
             r = requests.post(links["publish"], headers=h, verify=False)
             
         except:
             continue
-
         update_file = update(OriginalFile).where(OriginalFile.id==original_file.id).values(publish_status='published')
         session.execute(update_file)
         session.commit()
+        row_count = session.query(OriginalFile).filter(OriginalFile.publish_status == 'published').count()
+        notification.notify(
+            title="Total number of published records",
+            message=str(row_count),
+            app_name="GreSIS",
+            timeout=5,  
+        )
 
 
 

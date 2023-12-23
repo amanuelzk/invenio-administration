@@ -7,6 +7,8 @@ from PyPDF2 import PdfReader
 from .model import *
 from sqlalchemy.sql import update
 import json
+from plyer import notification 
+
 # Functions
 def get_matecat_languages(base_url, api_key):
     headers = {
@@ -139,6 +141,13 @@ def project_creation(file_paths):
                 update_file = update(OriginalFile).where(OriginalFile.id==original_file_id).values(project_status='created')
                 session.execute(update_file)
                 session.commit()
+                row_count = session.query(OriginalFile).filter(OriginalFile.project_status =='created').count()
+                notification.notify(
+                    title="Total number of created projects for translation",
+                    message=str(row_count),
+                    app_name="GreSIS",
+                    timeout=3,  
+                )
                 session.close()
             else:
                 print(f"Failed to get project status for project ID {project_id}")

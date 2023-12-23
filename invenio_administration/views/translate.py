@@ -6,6 +6,8 @@ from PyPDF2 import PdfReader
 from docx import Document
 from pptx import Presentation
 from .model import *
+from plyer import notification 
+
 
 def extract_text_from_pdf(file_path):
     reader = PdfReader(file_path)
@@ -95,6 +97,13 @@ def download_file_and_save(url, target_language, project_id, original_file_id):
                 update_original = update(OriginalFile).where(OriginalFile.id==original_file_id).values(translate_status='complete')
                 session.execute(update_original)
                 session.commit()
+                row_count = session.query(OriginalFile).filter(OriginalFile.translate_status == 'complete').count()
+                notification.notify(
+                    title="Total number of translated metadata",
+                    message=str(row_count),
+                    app_name="GreSIS",
+                    timeout=5,  
+                )
                 
                 return translated_filename
             else:
