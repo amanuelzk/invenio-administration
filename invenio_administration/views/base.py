@@ -654,6 +654,9 @@ class AdminResourceListView(AdminResourceBaseView):
     def get(self):
         """GET view method."""
         # print("THIS IS EDIT 24")
+        row_count_harvested = session.query(OriginalFile).count()
+        row_count_translated = session.query(OriginalFile).filter(OriginalFile.translate_status == 'complete').count()
+        row_count_published = session.query(OriginalFile).filter(OriginalFile.publish_status == 'published').count()
         search_conf = self.init_search_config()
         schema = self.get_service_schema()
         serialized_schema = self._schema_to_json(schema)
@@ -675,6 +678,9 @@ class AdminResourceListView(AdminResourceBaseView):
                 "pid_path": self.pid_path,
                 "create_ui_endpoint": self.get_create_view_endpoint(),
                 "list_ui_endpoint": self.get_list_view_endpoint(),
+                "row_count_harvested": row_count_harvested,
+                "row_count_translated": row_count_translated,
+                "row_count_published": row_count_published,
                 "resource_name": self.resource_name
                 if self.resource_name
                 else self.pid_path,

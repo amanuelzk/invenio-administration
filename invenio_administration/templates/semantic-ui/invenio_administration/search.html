@@ -7,6 +7,9 @@
 
 {% extends admin_base_template %}
 
+{% set row_count_harvested = row_count_harvested %}
+{% set row_count_translated = row_count_translated %}
+{% set row_count_published = row_count_published %}
 {% block admin_main_column %}
   <main id="admin-main-content"
         class="ten wide mobile twelve wide tablet thirteen wide computer fourteen wide widescreen column">
@@ -40,6 +43,9 @@
           </div>
         {% endif %}
       </div>
+      <p>Harvested:{{row_count_harvested}}</p>
+      <p>Translated:{{row_count_translated}}</p>
+      <p>Published:{{row_count_published}}</p>
     </div>
       {% block admin_page_content %}
         <div class="ui divider" aria-hidden="true"></div>

@@ -105,7 +105,6 @@ def publish_function():
             metadata_dict = arabic_metadata.file_data
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
-            creators_info = data.get('metadata', {}).get('creators', [])
             get_description = data.get('metadata', {}).get('description','')
             if get_description == '':
                 additional_descriptions=[]
@@ -116,17 +115,6 @@ def publish_function():
                                 "lang": {"id": "ara",}
                                 }
                 additional_descriptions.append(add_description)
-            
-            for author in creators_info:
-                person_or_org = author.get('person_or_org',{})
-                family_name = person_or_org.get('family_name','') 
-                creator={
-                        "person_or_org":{
-                            "family_name": family_name,
-                            "type": "personal"                                                                        
-                        }
-                        }
-                creators_list.append(creator)
             get_contributor = data.get('metadata', {}).get('contributors', [])
             for contribute in get_contributor:
                 try:
@@ -158,7 +146,6 @@ def publish_function():
             metadata_dict = french_metadata.file_data
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
-            creators_info = data.get('metadata', {}).get('creators', [])
             get_description = data.get('metadata', {}).get('description','')
             if get_description == '':
                 additional_descriptions=[]
@@ -169,17 +156,6 @@ def publish_function():
                                 "lang": {"id": "fra",}
                                 }
                 additional_descriptions.append(add_description)
-            
-            for author in creators_info:
-                person_or_org = author.get('person_or_org',{})
-                family_name = person_or_org.get('family_name','') 
-                creator={
-                        "person_or_org":{
-                            "family_name": family_name,
-                            "type": "personal"                                                                        
-                        }
-                        }
-                creators_list.append(creator)
             get_contributor = data.get('metadata', {}).get('contributors', [])
             for contribute in get_contributor:
                 try:
@@ -210,7 +186,6 @@ def publish_function():
             metadata_dict = spanish_metadata.file_data
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
-            creators_info = data.get('metadata', {}).get('creators', [])
             get_description = data.get('metadata', {}).get('description','')
             if get_description == '':
                 additional_descriptions=[]
@@ -221,17 +196,6 @@ def publish_function():
                                 "lang": {"id": "spa",}
                                 }
                 additional_descriptions.append(add_description)
-            
-            for author in creators_info:
-                person_or_org = author.get('person_or_org',{})
-                family_name = person_or_org.get('family_name','') 
-                creator={
-                        "person_or_org":{
-                            "family_name": family_name,
-                            "type": "personal"                                                                        
-                        }
-                        }
-                creators_list.append(creator)
             get_contributor = data.get('metadata', {}).get('contributors', [])
             for contribute in get_contributor:
                 try:
@@ -262,7 +226,6 @@ def publish_function():
             metadata_dict = english_metadata.file_data
             json_data = json.dumps(metadata_dict)
             data=json.loads(json_data.encode('utf-8'))
-            creators_info = data.get('metadata', {}).get('creators', [])
             get_description = data.get('metadata', {}).get('description','')
             if get_description == '':
                 additional_descriptions=[]
@@ -273,17 +236,6 @@ def publish_function():
                                 "lang": {"id": "eng",}
                                 }
                 additional_descriptions.append(add_description)
-            
-            for author in creators_info:
-                person_or_org = author.get('person_or_org',{})
-                family_name = person_or_org.get('family_name','') 
-                creator={
-                        "person_or_org":{
-                            "family_name": family_name,
-                            "type": "personal"                                                                        
-                        }
-                        }
-                creators_list.append(creator)
             get_contributor = data.get('metadata', {}).get('contributors', [])
             for contribute in get_contributor:
                 try:
