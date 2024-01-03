@@ -115,24 +115,6 @@ def publish_function():
                                 "lang": {"id": "ara",}
                                 }
                 additional_descriptions.append(add_description)
-            get_contributor = data.get('metadata', {}).get('contributors', [])
-            for contribute in get_contributor:
-                try:
-                    person_or_org = contribute.get('person_or_org',{})
-                    contributor_name = person_or_org.get('name','') 
-                    contributor={
-                            "person_or_org":{
-                                "type": "personal",
-                                "name": contributor_name,
-                                "family_name": contributor_name
-                            },
-                            "role": {
-                                "id": "other"
-                            }
-                            }
-                    contributors_list.append(contributor)
-                except:
-                    contributors_list =[]
             get_title = data.get('metadata', {}).get('title','')
             add_title = {
                         "title": get_title,
@@ -156,24 +138,6 @@ def publish_function():
                                 "lang": {"id": "fra",}
                                 }
                 additional_descriptions.append(add_description)
-            get_contributor = data.get('metadata', {}).get('contributors', [])
-            for contribute in get_contributor:
-                try:
-                    person_or_org = contribute.get('person_or_org',{})
-                    contributor_name = person_or_org.get('name','') 
-                    contributor={
-                            "person_or_org":{
-                                "type": "personal",
-                                "name": contributor_name,
-                                "family_name": contributor_name
-                            },
-                            "role": {
-                                "id": "other"
-                            }
-                            }
-                    contributors_list.append(contributor)
-                except:
-                    contributors_list =[]
             get_title = data.get('metadata', {}).get('title','')
             add_title = {
                         "title": get_title,
@@ -196,24 +160,6 @@ def publish_function():
                                 "lang": {"id": "spa",}
                                 }
                 additional_descriptions.append(add_description)
-            get_contributor = data.get('metadata', {}).get('contributors', [])
-            for contribute in get_contributor:
-                try:
-                    person_or_org = contribute.get('person_or_org',{})
-                    contributor_name = person_or_org.get('name','') 
-                    contributor={
-                            "person_or_org":{
-                                "type": "personal",
-                                "name": contributor_name,
-                                "family_name": contributor_name
-                            },
-                            "role": {
-                                "id": "other"
-                            }
-                            }
-                    contributors_list.append(contributor)
-                except:
-                    contributors_list =[]
             get_title = data.get('metadata', {}).get('title','')
             add_title = {
                         "title": get_title,
@@ -237,23 +183,6 @@ def publish_function():
                                 }
                 additional_descriptions.append(add_description)
             get_contributor = data.get('metadata', {}).get('contributors', [])
-            for contribute in get_contributor:
-                try:
-                    person_or_org = contribute.get('person_or_org',{})
-                    contributor_name = person_or_org.get('name','') 
-                    contributor={
-                            "person_or_org":{
-                                "type": "personal",
-                                "name": contributor_name,
-                                "family_name": contributor_name
-                            },
-                            "role": {
-                                "id": "other"
-                            }
-                            }
-                    contributors_list.append(contributor)
-                except:
-                    contributors_list =[]
             get_title = data.get('metadata', {}).get('title','')
             add_title = {
                         "title": get_title,
