@@ -381,13 +381,17 @@ class AdminFormView(AdminResourceBaseView):
                                 }
                             }                            
                         )
+
+                date_list = meta['date']
+                for get_date in date_list:
+                    real_date=get_date
                 try:    
-                    date_string = meta['date'][0]
+                    date_string = real_date
                     date_format = "%Y-%m-%dT%H:%M:%SZ"
                     input_date = datetime.strptime(date_string, date_format)
                     publdate = input_date.strftime("%Y-%m-%d")
                 except:
-                    publdate = meta['date'][0]
+                    publdate = real_date
                 
                 contributors_list=[]
                 try:
@@ -407,8 +411,15 @@ class AdminFormView(AdminResourceBaseView):
                 except:
                     contributors_list=[]                                   
                 
-                description = meta.get('description',[''])[0]
-                
+                try:
+                    description_list=meta['description']
+                    description = ''
+                    for desc in description_list:
+                        description += ' '
+                        description += desc
+                except:
+                    description=''
+        
                 try:
                     identifier_list = meta['identifier']
                     identifier=""
