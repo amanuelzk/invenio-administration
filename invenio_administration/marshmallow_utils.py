@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2022 CERN.
-#
+# Copyright (C) 2023 KTH Royal Institute of Technology.
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
@@ -17,8 +17,11 @@ from marshmallow import fields
 from marshmallow_utils import fields as invenio_fields
 from marshmallow_utils.fields import EDTFDateString, EDTFDateTimeString
 
-vocabulary_schemas = [ContribVocabularyRelationSchema, BaseVocabularySchema,
-                      VocabularyRelationSchema]
+vocabulary_schemas = [
+    ContribVocabularyRelationSchema,
+    BaseVocabularySchema,
+    VocabularyRelationSchema,
+]
 
 custom_mapping = {
     # marshmallow
@@ -55,6 +58,29 @@ custom_mapping = {
 }
 
 
+def find_type_in_mapping(field_type, custom_mapping):
+    """
+    Find a field type by traversing the inheritance chain.
+
+    Args:
+        field_type (Type): The field type to be searched.
+        custom_mapping (dict): The mapping of types.
+
+    Returns:
+        The mapped value for the found field type.
+
+    Raises:
+        KeyError: If the field type is not found in the mapping.
+    """
+    current_type = field_type
+    while current_type:
+        if current_type in custom_mapping:
+            return custom_mapping[current_type]
+        current_type = current_type.__base__
+
+    raise KeyError(f"Unrecognized field type: {field_type}")
+
+
 def jsonify_schema(schema):
     """Marshmallow schema to dict."""
     schema_dict = {}
@@ -68,8 +94,11 @@ def jsonify_schema(schema):
             continue
 
         is_read_only = field_type.dump_only
-        is_create_only = field_type.metadata["create_only"] \
-            if "create_only" in field_type.metadata else False
+        is_create_only = (
+            field_type.metadata["create_only"]
+            if "create_only" in field_type.metadata
+            else False
+        )
 
         field_type_name = field_type.__class__
         is_required = field_type.required
@@ -80,10 +109,11 @@ def jsonify_schema(schema):
         schema_dict[field] = {
             "required": is_required,
             "readOnly": is_read_only,
-            "title": field_type.metadata[
-                "title"] if "title" in field_type.metadata else None,
+            "title": field_type.metadata["title"]
+            if "title" in field_type.metadata
+            else None,
             "createOnly": is_create_only,
-            "metadata": field_type.metadata
+            "metadata": field_type.metadata,
         }
 
         if nested_field:
@@ -92,28 +122,45 @@ def jsonify_schema(schema):
             else:
                 schema_type = "object"
 
-            schema_dict[field].update({
-                "type": schema_type,
-                "properties": jsonify_schema(field_type.schema),
-            })
+            schema_dict[field].update(
+                {
+                    "type": schema_type,
+                    "properties": jsonify_schema(field_type.schema),
+                }
+            )
         elif list_field and isinstance(field_type.inner, fields.Nested):
             # list of objects (vocabularies or nested)
-            schema_dict[field].update({
-                "type": "array",
-                "items": {"type": "object",
-                          "properties": jsonify_schema(field_type.inner.schema)},
-            })
+            schema_dict[field].update(
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": jsonify_schema(field_type.inner.schema),
+                    },
+                }
+            )
         elif list_field and not isinstance(field_type.inner, fields.Nested):
             # list of plain types
-            schema_dict[field].update({
-                "type": "array",
-                "items": {"type": custom_mapping[field_type.inner.__class__]},
-            })
+            schema_dict[field].update(
+                {
+                    "type": "array",
+                    "items": {
+                        "type": find_type_in_mapping(
+                            field_type.inner.__class__, custom_mapping
+                        )
+                    },
+                }
+            )
         else:
             try:
-                schema_dict[field].update({
-                    "type": custom_mapping[field_type_name],
-                })
+                field_type_mapping = find_type_in_mapping(
+                    field_type_name, custom_mapping
+                )
+                schema_dict[field].update(
+                    {
+                        "type": field_type_mapping,
+                    }
+                )
             except KeyError:
                 raise Exception(f"Unrecognised schema field {field}: {field_type_name}")
     return schema_dict

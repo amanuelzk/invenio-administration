@@ -70,9 +70,7 @@ class MissingExtensionName(Exception):
         super().__init__(
             _(
                 "Cannot instantiate resource view {name} without an "
-                "associated flask extension.".format(
-                    name=name
-                )
+                "associated flask extension.".format(name=name)
             )
         )
 
@@ -85,8 +83,6 @@ class MissingDefaultGetView(Exception):
         super().__init__(
             _(
                 "Cannot instantiate administration view {name} without a "
-                "default GET view".format(
-                    name=name
-                )
+                "default GET view".format(name=name)
             )
         )

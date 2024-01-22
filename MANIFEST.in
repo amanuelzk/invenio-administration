@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2022 CERN.
+# Copyright (C) 2023 KTH Royal Institute of Technology.
 #
 # invenio-administration is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -21,7 +22,7 @@ include *.rst
 include *.sh
 include *.txt
 include babel.ini
-include pytest.ini
+include .git-blame-ignore-revs
 prune docs/_build
 recursive-include .github/workflows *.yml
 recursive-include invenio_administration *.json

@@ -8,6 +8,12 @@
 Changes
 =======
 
+Version 1.10.1 (2023-12-07)
+
+- format: enforce code formatting using black
+- marshmallow_utils: enhance marshmallow utility functions to traverse type inheritance
+- i18n-global: add fuzzy search in compile-catalog
+
 Version 1.10.0 (2023-11-30)
 
 - marshmallw_utils: add EDTFDateTimeString mapping

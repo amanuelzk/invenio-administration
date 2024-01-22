@@ -52,9 +52,7 @@ def test_view_registration_duplicated(current_admin_ext, test_app, mock_extensio
         )
 
 
-def test_view_registration_url_naming(
-    test_app, current_admin_core
-):
+def test_view_registration_url_naming(test_app, current_admin_core):
     """Test view registration urls with spaces."""
     # Get registered url from app's url Map
     view_filter = [

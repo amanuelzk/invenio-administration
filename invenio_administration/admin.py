@@ -111,7 +111,8 @@ class Administration:
 
         # TODO change to be configurable
         if not isinstance(view_instance, AdminResourceDetailView) and not isinstance(
-                view_instance, AdminFormView):
+            view_instance, AdminFormView
+        ):
             self._menu.add_view_to_menu(view_instance)
 
     def _add_dashboard_view(self):

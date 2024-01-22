@@ -114,10 +114,8 @@ html_theme_options = {
     "github_banner": True,
     "show_powered_by": False,
     "extra_nav_links": {
-        "invenio-administration@GitHub":
-            "https://github.com/inveniosoftware/invenio-administration",
-        "invenio-administration@PyPI":
-            "https://pypi.python.org/pypi/invenio-administration/",
+        "invenio-administration@GitHub": "https://github.com/inveniosoftware/invenio-administration",
+        "invenio-administration@PyPI": "https://pypi.python.org/pypi/invenio-administration/",
     },
 }
 

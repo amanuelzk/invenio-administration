@@ -143,7 +143,7 @@ class MenuItem:
         icon_key=None,
         active_when=None,
         label="",
-        disabled=lambda x: False
+        disabled=lambda x: False,
     ):
         """Constructor."""
         self.name = name

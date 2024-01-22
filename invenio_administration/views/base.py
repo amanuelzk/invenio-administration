@@ -280,7 +280,7 @@ class AdminResourceDetailView(AdminResourceBaseView):
         serialized_schema = self._schema_to_json(schema)
         fields = self.item_field_list
         return {
-            "request_headers"
+            "request_headers": self.request_headers,
             "name": name,
             "resource_schema": serialized_schema,
             "fields": fields,

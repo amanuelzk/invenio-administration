@@ -19,16 +19,11 @@ theme = WebpackThemeBundle(
     themes={
         "semantic-ui": dict(
             entry={
-                "invenio-administration-search":
-                    "./js/invenio_administration/src/search/search.js",
-                "invenio-administration-edit":
-                    "./js/invenio_administration/src/edit/edit.js",
-                "invenio-administration-create":
-                    "./js/invenio_administration/src/create/create.js",
-                "base-admin-theme":
-                    "./js/invenio_administration/src/theme.js",
-                "invenio-administration-details":
-                    "./js/invenio_administration/src/details/details.js"
+                "invenio-administration-search": "./js/invenio_administration/src/search/search.js",
+                "invenio-administration-edit": "./js/invenio_administration/src/edit/edit.js",
+                "invenio-administration-create": "./js/invenio_administration/src/create/create.js",
+                "base-admin-theme": "./js/invenio_administration/src/theme.js",
+                "invenio-administration-details": "./js/invenio_administration/src/details/details.js",
             },
             dependencies={
                 "@babel/runtime": "^7.9.0",
@@ -50,8 +45,7 @@ theme = WebpackThemeBundle(
                 # entry point). theme.config itself is provided by
                 # cookiecutter-invenio-rdm.
                 "@js/invenio_administration": "js/invenio_administration",
-                "@translations/invenio_administration":
-                    "translations/invenio_administration",
+                "@translations/invenio_administration": "translations/invenio_administration",
             },
         ),
     },
